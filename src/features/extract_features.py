@@ -121,13 +121,13 @@ if __name__ == "__main__":
     ewma_params = read_params()["extract_features"]["ewma"]
     print("Parameters for EWMA are ", ewma_params)    
     
-    # calculate avg pickups using EWMA
-    # dataset with pickup smoothing applied
+    # calculate avg pickups using EWMA (shifted by 1 to avoid data leakage)
     resampled_data["avg_pickups"] = (
                 resampled_data
                 .groupby("region")['total_pickups']
                 .ewm(**ewma_params)
                 .mean()
+                .shift(1)
                 .round()
                 .values
             )
